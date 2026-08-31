@@ -1,0 +1,269 @@
+﻿==============================================================================
+PROJETO 1 - ARSENIO NAS UNHAS DO PE (regressao linear multipla)
+==============================================================================
+
+Arquivo    : arsenio_dataset.csv
+Observacoes: 21
+Resposta   : Arsenio_Unhas (ppm)
+Regressores: Idade, Uso_Beber, Uso_Cozinhar, Arsenio_Agua
+
+------------------------------------------------------------------------------
+(a) MODELO COMPLETO - ajuste por minimos quadrados
+------------------------------------------------------------------------------
+
+  Intercepto (b0) = +0.487508
+  Idade          = -0.000767
+  Uso_Beber      = -0.022739
+  Uso_Cozinhar   = -0.041504
+  Arsenio_Agua   = +13.240010
+
+  Equacao ajustada:
+    Arsenio_Unhas = +0.487508 -0.000767*Idade -0.022739*Uso_Beber -0.041504*Uso_Cozinhar +13.240010*Arsenio_Agua
+
+  Interpretacao dos coeficientes (mantendo as demais constantes):
+   - 1 ano a mais de idade   -> -0.000767 ppm nas unhas
+   - +1 categoria de 'beber' -> -0.022739 ppm nas unhas
+   - +1 categoria de 'cozinhar' -> -0.041504 ppm nas unhas
+   - +1 ppm de arsenio na agua  -> +13.240010 ppm nas unhas
+   - Intercepto: valor esperado (+0.487508 ppm) quando todos
+     os regressores valem zero (extrapolacao, sem sentido pratico
+     porque nao existe participante com idade 0 e categorias 0).
+
+------------------------------------------------------------------------------
+(b) PREVISAO: idade=30, beber=5, cozinhar=5, arsenio na agua=0.135
+------------------------------------------------------------------------------
+
+  Arsenio previsto nas unhas = 1.930684 ppm
+
+------------------------------------------------------------------------------
+(d)/(e) R2 E R2 AJUSTADO DO MODELO COMPLETO
+------------------------------------------------------------------------------
+
+  R2          = 0.811991
+  R2 ajustado = 0.764989
+
+  Por que usar o R2 ajustado?
+  O R2 comum nunca diminui quando um regressor e acrescentado, mesmo que
+  esse regressor seja inutil: ele sempre "melhora" com modelos maiores.
+  O R2 ajustado penaliza o numero de parametros (n-p-1 no denominador), so
+  aumentando quando a variavel nova explica mais do que o custo em graus de
+  liberdade. Por isso ele e a estatistica adequada para COMPARAR modelos com
+  numeros diferentes de regressores; o R2 comum serve apenas para descrever
+  o ajuste de um modelo isolado.
+  Observe que o R2 ajustado e menor que o R2 comum (ele nao "e melhor" em
+  valor, e mais honesto): a diferenca entre os dois mostra quanto do ajuste
+  vem apenas da quantidade de variaveis usadas.
+
+------------------------------------------------------------------------------
+(f) COMPARACAO COM O MODELO ALTERNATIVO (so Arsenio_Agua)
+------------------------------------------------------------------------------
+
+  Modelo alternativo: Arsenio_Unhas = +0.155036 +12.985583*Arsenio_Agua
+
+  Modelo completo (4 regressores)
+    R2          = 0.811991
+    R2 ajustado = 0.764989
+    MSE         = 0.042439
+    RMSE        = 0.206007
+    MAE         = 0.115697
+
+  Modelo alternativo (1 regressor)
+    R2          = 0.803564
+    R2 ajustado = 0.793225
+    MSE         = 0.044341
+    RMSE        = 0.210573
+    MAE         = 0.133382
+
+  Discussao:
+  O R2 do modelo completo (0.8120) e maior que o do alternativo
+  (0.8036), o que era esperado: acrescentar variaveis nunca reduz o R2.
+  A comparacao justa e pelo R2 ajustado: 0.7650 (completo) contra
+  0.7932 (alternativo). Pelo criterio do R2 ajustado o melhor modelo e o
+  ALTERNATIVO (so Arsenio_Agua). As variaveis idade, uso para beber e uso para cozinhar
+  contribuem pouco: nesta amostra, a concentracao de arsenio na agua foi a
+  variavel que apresentou maior contribuicao para explicar a concentracao
+  encontrada nas unhas.
+
+------------------------------------------------------------------------------
+(f-2) ANALISE DE RESIDUOS DO MODELO COMPLETO
+------------------------------------------------------------------------------
+
+  Tabela de residuos (todas as observacoes)
+  ---------------------------------------------------------------------
+    i   y observado    y ajustado     residuo e   residuo / erro padrao
+  ---------------------------------------------------------------------
+    1        0.1190        0.1441       -0.0251                 -0.1062
+    2        0.1180        0.1573       -0.0393                 -0.1665
+    3        0.0990        0.1325       -0.0335                 -0.1421
+    4        0.1180        0.1764       -0.0584                 -0.2473
+    5        0.2770        0.2061        0.0709                  0.3003
+    6        0.3580        0.1318        0.2262                  0.9585
+    7        0.0800        0.1320       -0.0520                 -0.2202
+    8        0.1580        0.1690       -0.0110                 -0.0467
+    9        0.3100        0.3100        0.0000                  0.0000
+   10        0.1050        0.1514       -0.0464                 -0.1968
+   11        0.0730        0.1111       -0.0381                 -0.1613
+   12        0.8320        0.8318        0.0002                  0.0010
+   13        0.5170        0.3825        0.1345                  0.5699
+   14        2.2520        1.9142        0.3378                  1.4312
+   15        0.8510        0.4435        0.4075                  1.7267
+   16        0.2690        0.3734       -0.1044                 -0.4426
+   17        0.4330        1.1441       -0.7111                 -3.0129
+   18        0.1410        0.1180        0.0230                  0.0976
+   19        0.2750        0.3525       -0.0775                 -0.3285
+   20        0.1350        0.1203        0.0147                  0.0622
+   21        0.1750        0.1930       -0.0180                 -0.0761
+  ---------------------------------------------------------------------
+
+  Soma dos residuos      = -6.106227e-16  (deve ser ~0)
+  Media dos residuos     = -2.907727e-17
+  Desvio-padrao amostral = 0.211094
+  Erro padrao da regressao (s) = 0.236010
+  Residuo minimo / maximo = -0.7111 / 0.4075
+  Assimetria dos residuos = -1.3136 (0 = simetrico)
+  Curtose (excesso)       = 4.9166 (0 = normal)
+  Durbin-Watson           = 1.5456 (dados transversais: ver ressalva abaixo)
+  Observacoes com |residuo / erro padrao| > 2: 17
+
+  Residuos x Valores ajustados
+     0.4075 |           *                                                 
+            |                                                            *
+            |                                                             
+            | *                                                           
+            |         *                                                   
+            |*  *                                                         
+            |****---*----------------*------------------------------------
+            | **     **                                                   
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+    -0.7111 |                                  *                          
+            +-------------------------------------------------------------
+             0.1111                                         1.9142   (valores ajustados)
+  (eixo vertical: residuo)
+
+  Residuos x Ordem da observacao
+     0.4075 |                                          *                  
+            |                                       *                     
+            |                                                             
+            |               *                                             
+            |                                    *                        
+            |            *                                      *         
+            |*--*--*--------------*--*--*--*--*-----------------------*--*
+            |         *        *                          *        *      
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+            |                                                             
+    -0.7111 |                                                *            
+            +-------------------------------------------------------------
+             1.0000                                         21.0000   (ordem)
+  (eixo vertical: residuo)
+
+  Histograma dos residuos
+    [ -0.7111 ;  -0.5868)  ##                                       1
+    [ -0.5868 ;  -0.4625)                                           0
+    [ -0.4625 ;  -0.3382)                                           0
+    [ -0.3382 ;  -0.2139)                                           0
+    [ -0.2139 ;  -0.0896)  ##                                       1
+    [ -0.0896 ;   0.0346)  ###########################              14
+    [  0.0346 ;   0.1589)  ####                                     2
+    [  0.1589 ;   0.2832)  ##                                       1
+    [  0.2832 ;   0.4075)  ####                                     2
+
+  Graficos salvos em PNG (para usar no relatorio):
+    - p1_residuos_x_ajustados.png
+    - p1_histograma_residuos.png
+    - p1_residuos_x_ordem.png
+
+  Verificacao das suposicoes:
+  - Media zero: a soma dos residuos e praticamente nula, como garante o
+    metodo dos minimos quadrados com intercepto.
+  - Homocedasticidade: no grafico residuos x ajustados a dispersao NAO e
+    constante; os pontos com valores ajustados maiores apresentam residuos
+    maiores em modulo, indicando variancia crescente (heterocedasticidade).
+  - Normalidade: assimetria -1.31 e curtose 4.92 mostram
+    residuos assimetricos (cauda a esquerda) e mais pesados que os de uma
+    normal; ha observacao com |residuo / erro padrao| acima de 2
+    (candidata a outlier / ponto influente).
+  - Independencia: o valor de Durbin-Watson foi 1.5456. Entretanto, como os
+    dados sao transversais e a ordem dos participantes e arbitraria, essa
+    metrica deve ser interpretada com cautela.
+  Conclusao: as suposicoes de variancia constante e normalidade sao apenas
+  parcialmente atendidas. Uma transformacao da resposta, como o logaritmo de
+  Arsenio_Unhas, pode ser investigada para tentar reduzir esse
+  comportamento.
+
+------------------------------------------------------------------------------
+(g) MODELO COM INTERCEPTO FORCADO A ZERO
+------------------------------------------------------------------------------
+
+  Coeficientes (sem intercepto):
+    Idade          = +0.000440
+    Uso_Beber      = -0.011108
+    Uso_Cozinhar   = +0.036132
+    Arsenio_Agua   = +12.963466
+
+  R2 (formula usual, em torno da media) = 0.796691
+  R2 (versao nao centrada, sem media)   = 0.872520
+  RMSE                                  = 0.214225
+  MAE                                   = 0.134306
+
+  Comparacao com o modelo COM intercepto:
+    R2   : 0.811991 (com)  x  0.796691 (sem)
+    RMSE : 0.206007 (com)  x  0.214225 (sem)
+
+  Interpretacao pratica:
+  Forcar o intercepto a zero significa afirmar que, com idade 0, categorias
+  de uso 0 e agua sem arsenio, o arsenio nas unhas seria exatamente 0 ppm.
+  Isso e teoricamente insustentavel aqui: idade zero e categoria zero nem
+  existem no dominio dos dados (as categorias vao de 1 a 5), e o organismo
+  recebe arsenio tambem por outras fontes (alimentos, ar), de modo que a
+  resposta nao precisa passar pela origem.
+  Alem disso a restricao retira um grau de liberdade ao ajuste: a reta e
+  obrigada a passar pela origem e o RMSE aumenta (0.2060 ->
+  0.2142). Atencao: o R2 do modelo sem intercepto nao e
+  comparavel diretamente, pois a decomposicao da soma de quadrados so vale
+  quando ha intercepto (por isso as duas versoes acima).
+  Escolha: o modelo COM intercepto, por ter menor erro e por nao impor uma
+  restricao sem justificativa fisica.
+
+------------------------------------------------------------------------------
+(h) ALEM DO R2 - MSE, RMSE E MAE
+------------------------------------------------------------------------------
+
+  Modelo                                     MSE        RMSE         MAE
+  ----------------------------------------------------------------------
+  Completo (4 regressores)              0.042439    0.206007    0.115697
+  Alternativo (so Arsenio_Agua)         0.044341    0.210573    0.133382
+  Completo sem intercepto               0.045892    0.214225    0.134306
+
+  Interpretacao:
+  - MSE esta em ppm^2 e penaliza fortemente os erros grandes (eleva ao
+    quadrado), sendo sensivel a outliers como a observacao de maior
+    concentracao.
+  - RMSE volta a unidade original (ppm): o modelo completo erra em media
+    cerca de 0.2060 ppm, contra 0.2106 ppm do
+    modelo so com o arsenio na agua. Como a media observada e
+    0.3664 ppm, o erro tipico e da ordem de
+    56.2% da media.
+  - MAE (0.1157 ppm no modelo completo) e a media dos desvios
+    absolutos: nao amplifica outliers, por isso e bem menor que o RMSE. A
+    distancia entre MAE e RMSE confirma a presenca de poucos erros muito
+    grandes, coerente com a analise de residuos.
+  Em todas as metricas de erro o modelo completo fica a frente do
+  alternativo, mas a vantagem e pequena diante do custo de 3 parametros
+  extras - o que reforca a leitura do R2 ajustado.
+
+==============================================================================
+FIM - PROJETO 1
+==============================================================================

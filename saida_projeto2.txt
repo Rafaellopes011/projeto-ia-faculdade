@@ -1,0 +1,232 @@
+﻿==============================================================================
+PROJETO 2 - DOSE DE RADIACAO EM CIRCUITOS INTEGRADOS
+==============================================================================
+
+Arquivo    : dose_radiacao_expandido.csv
+Observacoes: 540
+Resposta   : Dose_de_Radiacao (rad)
+Regressores: mAmp, Tempo_de_Exposicao
+
+Estatisticas descritivas:
+  variavel                   media      desvio      minimo      maximo
+  Dose_de_Radiacao        455.4220    590.0697      7.4000   2368.0000
+  mAmp                     23.8889     10.9928     10.0000     40.0000
+  Tempo_de_Exposicao        6.6333      7.4168      0.2500     20.0000
+
+------------------------------------------------------------------------------
+(a) MODELO COMPLETO - ajuste por minimos quadrados
+------------------------------------------------------------------------------
+
+  Intercepto (b0)      = -433.814457
+  mAmp (b1)            = +17.903524
+  Tempo_de_Exposicao (b2) = +69.579075
+
+  Equacao ajustada:
+    Dose = -433.8145 +17.9035*mAmp +69.5791*Tempo
+
+  Interpretacao dos coeficientes (a outra variavel constante):
+   - +1 mA de corrente  -> +17.9035 rad na dose esperada
+   - +1 minuto de exposicao -> +69.5791 rad na dose esperada
+   - Intercepto (-433.8145 rad): dose esperada com corrente 0
+     e tempo 0. Trata-se de uma extrapolacao fora da faixa dos
+     dados (corrente de 10 a 40 mA, tempo de 0,25 a 20 min); o
+     valor negativo indica que a forma aditiva nao descreve bem a
+     regiao proxima da origem.
+
+------------------------------------------------------------------------------
+(b) PREVISAO: corrente = 15 mA, tempo de exposicao = 5 minutos
+------------------------------------------------------------------------------
+
+  Dose de radiacao prevista = 182.6338 rad
+
+------------------------------------------------------------------------------
+(c)/(d) R2 E R2 AJUSTADO DO MODELO COMPLETO
+------------------------------------------------------------------------------
+
+  R2          = 0.843096
+  R2 ajustado = 0.842511
+
+  Por que usar o R2 ajustado?
+  O R2 comum nunca diminui ao se acrescentar um regressor, mesmo que ele nao
+  traga informacao: modelos maiores sempre "parecem" melhores. O R2 ajustado
+  corrige isso penalizando o numero de parametros (fator (n-1)/(n-p-1)), e so
+  cresce quando a variavel nova compensa o grau de liberdade gasto. Por isso
+  ele e a estatistica correta para COMPARAR modelos de tamanhos diferentes.
+  Com n = 540 e apenas p = 2 regressores a penalizacao e minima
+  (R2 = 0.8431 contra R2 ajustado = 0.8425);
+  a diferenca cresceria muito se o numero de variaveis fosse grande em
+  relacao ao numero de observacoes.
+
+------------------------------------------------------------------------------
+(e) COMPARACAO COM O MODELO ALTERNATIVO (so mAmp)
+------------------------------------------------------------------------------
+
+  Modelo alternativo: Dose = +91.1745 +15.2476*mAmp
+
+  Modelo completo (mAmp + Tempo)
+    R2          = 0.843096
+    R2 ajustado = 0.842511
+    MSE         = 54530.0719
+    RMSE        = 233.5167
+    MAE         = 187.5942
+
+  Modelo alternativo (so mAmp)
+    R2          = 0.080688
+    R2 ajustado = 0.078979
+    MSE         = 319495.3285
+    RMSE        = 565.2392
+    MAE         = 464.2573
+
+  Discussao:
+  O modelo completo explica 84.31% da variabilidade da dose,
+  contra apenas 8.07% do modelo com a corrente sozinha; o
+  R2 ajustado (0.8425 x 0.0790)
+  confirma a vantagem mesmo penalizando o parametro extra, e o RMSE cai de
+  565.24 rad para 233.52 rad.
+  Nesta amostra, o tempo de exposicao foi a variavel que apresentou maior
+  contribuicao para explicar a dose de radiacao: ele varia de 0,25 a 20
+  minutos e deixa-lo de fora reduz muito o poder explicativo do modelo.
+  O melhor modelo, entre os dois, e o COMPLETO.
+
+------------------------------------------------------------------------------
+ANALISE DE RESIDUOS DO MODELO COMPLETO
+------------------------------------------------------------------------------
+
+  Soma dos residuos     = 2.273737e-12 (deve ser ~0)
+  Desvio-padrao         = 233.7333
+  Erro padrao da regressao (s) = 234.1681
+  Residuo minimo/maximo = -544.8023 / 694.0920
+  Durbin-Watson         = 1.8190 (dados experimentais: ver ressalva abaixo)
+
+  Primeiras 20 observacoes (tabela de residuos)
+  ----------------------------------------------------------
+     i    y observado     y ajustado      residuo e
+  ----------------------------------------------------------
+     1         7.4000      -237.3844       244.7844
+     2        14.8000      -219.9897       234.7897
+     3        29.6000      -185.2001       214.8001
+     4        59.2000      -115.6211       174.8211
+     5        88.8000       -46.0420       134.8420
+     6       296.0000       441.0115      -145.0115
+     7       444.0000       788.9069      -344.9069
+     8       592.0000      1136.8023      -544.8023
+     9        11.1000      -147.8668       158.9668
+    10        22.2000      -130.4721       152.6721
+    11        44.4000       -95.6825       140.0825
+    12        88.8000       -26.1034       114.9034
+    13       133.2000        43.4756        89.7244
+    14       444.0000       530.5292       -86.5292
+    15       666.0000       878.4245      -212.4245
+    16       888.0000      1226.3199      -338.3199
+    17        14.8000       -58.3492        73.1492
+    18        29.6000       -40.9544        70.5544
+    19        59.2000        -6.1649        65.3649
+    20       118.4000        63.4142        54.9858
+  ----------------------------------------------------------
+  (tabela completa: 540 observacoes)
+
+  Residuos x Valores ajustados
+     694.09 |                                                            *
+            |                                                             
+            |                                                             
+            |                                                 *           
+            |                                                             
+            |                                                      *      
+            |***                                   *                      
+            |   ** **                                   *                 
+            |      ** *  *                    *                           
+            |---------------------------*---------------------------------
+            |           *** * *      *             *                      
+            |                     * *                         *           
+            |                 **                *                         
+            |                                *             *              
+            |                                                             
+            |                                                             
+    -544.80 |                                           *                 
+            +-------------------------------------------------------------
+             -237.38                                           1673.91   (valores ajustados (rad))
+  (eixo vertical: residuo (rad))
+
+  Graficos salvos em PNG (para usar no relatorio):
+    - p2_residuos_x_ajustados.png
+    - p2_histograma_residuos.png
+    - p2_observado_x_ajustado.png
+    - p2_residuos_x_tempo.png
+
+  Leitura dos graficos:
+  - Os residuos apresentam um padrao sistematico (formato curvo / em leque):
+    crescem em modulo conforme a dose ajustada aumenta, o que sugere
+    variancia nao constante (heterocedasticidade) e um efeito conjunto de
+    corrente e tempo nao captado por um modelo puramente aditivo.
+  - O valor de Durbin-Watson foi 1.8190. Entretanto, como os dados vem de um
+    experimento planejado e a ordem das linhas do arquivo e arbitraria, essa
+    metrica deve ser interpretada com cautela.
+  - Alternativas que podem ser investigadas para reduzir esse comportamento:
+    incluir o termo de interacao (mAmp * Tempo) ou trabalhar com a resposta
+    em escala logaritmica.
+
+------------------------------------------------------------------------------
+(f) MODELO COM INTERCEPTO FORCADO A ZERO
+------------------------------------------------------------------------------
+
+  mAmp               = +4.878044
+  Tempo_de_Exposicao = +60.747086
+
+  R2 (formula usual, em torno da media) = 0.763127
+  R2 (versao nao centrada, sem media)   = 0.851657
+  RMSE                                  = 286.9186
+  MAE                                   = 205.1239
+
+  Comparacao com o modelo COM intercepto:
+    R2   : 0.843096 (com)  x  0.763127 (sem)
+    RMSE : 233.5167 (com)  x  286.9186 (sem)
+
+  Interpretacao pratica:
+  Impor intercepto zero significa afirmar que sem corrente ou sem tempo de
+  exposicao a dose absorvida e exatamente 0 rad. Diferente do problema do
+  arsenio, aqui essa restricao e coerente com o contexto do experimento:
+  sem exposicao a raios X nao ha dose absorvida. Ela tambem elimina o
+  intercepto negativo estimado no modelo livre (-433.81 rad), que nao
+  tem interpretacao pratica.
+  Em termos numericos o RMSE passa de 233.52 para
+  286.92 rad. Como o ajuste com intercepto minimiza a soma de
+  quadrados sem restricao, o modelo restrito nunca pode ter erro menor - a
+  diferenca observada mostra quanto se paga pela restricao.
+  Lembrete: o R2 do modelo sem intercepto nao e diretamente comparavel, pois
+  a decomposicao da soma de quadrados so vale quando ha intercepto (dai as
+  duas versoes apresentadas).
+  Escolha: o modelo COM intercepto para fins de PREVISAO (menor erro); se o
+  objetivo for respeitar a interpretacao teorica do fenomeno, o modelo sem
+  intercepto e defensavel, e a perda de precisao e o preco dessa coerencia.
+
+------------------------------------------------------------------------------
+(h) ALEM DO R2 - MSE, RMSE E MAE
+------------------------------------------------------------------------------
+
+  Modelo                                     MSE        RMSE         MAE
+  ----------------------------------------------------------------------
+  Completo (mAmp + Tempo)             54530.0719    233.5167    187.5942
+  Alternativo (so mAmp)              319495.3285    565.2392    464.2573
+  Completo sem intercepto             82322.2571    286.9186    205.1239
+
+  Interpretacao:
+  - MSE (rad^2) penaliza fortemente os erros grandes; e util para comparar
+    modelos, mas sua unidade nao e interpretavel diretamente.
+  - RMSE (rad) esta na mesma unidade da resposta: o modelo completo erra em
+    media 233.52 rad, contra 565.24 rad do
+    modelo so com a corrente. Como a dose media observada e
+    455.42 rad, isso equivale a cerca de
+    51.3% e 124.1%
+    da media, respectivamente.
+  - MAE e a media dos desvios absolutos (187.59 rad no modelo
+    completo): por nao elevar ao quadrado, e menos sensivel a outliers. O
+    RMSE bem maior que o MAE indica que alguns pontos - os de corrente e
+    tempo altos - concentram os maiores erros, justamente onde o efeito
+    conjunto das duas variaveis nao e captado pelo modelo aditivo.
+  Conclusao: em todas as metricas o modelo completo supera o alternativo,
+  mas o comportamento dos residuos sugere que um modelo com termo de
+  interacao (mAmp * Tempo) poderia representar melhor os dados.
+
+==============================================================================
+FIM - PROJETO 2
+==============================================================================
