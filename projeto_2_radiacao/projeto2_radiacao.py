@@ -13,8 +13,6 @@ import numpy as np
 
 PASTA = os.path.dirname(os.path.abspath(__file__))
 
-# O CSV deve estar NA MESMA PASTA deste arquivo .py. Aceitamos as grafias
-# possiveis do nome do arquivo distribuido na disciplina.
 NOMES_ACEITOS = ["dose_radiacao_expandido.csv",
                  "dose_radiacao_expandida.csv",
                  "dose_radiacao_expandido (1).csv"]
@@ -133,7 +131,7 @@ def gerar_graficos(y, yhat, e, tempo, pasta):
     """
     try:
         import matplotlib
-        matplotlib.use("Agg")          # nao precisa de janela grafica
+        matplotlib.use("Agg")          
         import matplotlib.pyplot as plt
     except ImportError:
         print("\n  [matplotlib nao instalado - apenas os graficos em texto"
