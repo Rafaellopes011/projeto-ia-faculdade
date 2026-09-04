@@ -1,13 +1,3 @@
-"""
-Projeto 2 - Regressao linear multipla: dose de radiacao em circuitos integrados
-
-Resposta   : Dose_de_Radiacao (rad)
-Regressores: mAmp (corrente, miliamperes) e Tempo_de_Exposicao (minutos)
-
-Somente NumPy (nenhuma implementacao pronta de regressao e usada:
-os coeficientes sao obtidos resolvendo as equacoes normais).
-"""
-
 import os
 import numpy as np
 
@@ -30,24 +20,19 @@ def localizar_dataset():
 
 ARQUIVO = localizar_dataset()
 
-
-# ---------------------------------------------------------------- leitura ---
 def ler_csv(caminho):
-    """Le o CSV (a primeira coluna e um indice sem nome e e descartada)."""
     with open(caminho, "r", encoding="utf-8") as f:
         linhas = [l.strip() for l in f if l.strip()]
     cabecalho = linhas[0].split(",")
     dados = [[float(v) for v in l.split(",")] for l in linhas[1:]]
     matriz = np.array(dados, dtype=float)
-    if cabecalho[0].strip() == "":          # coluna de indice
+    if cabecalho[0].strip() == "":          
         cabecalho = cabecalho[1:]
         matriz = matriz[:, 1:]
     return cabecalho, matriz
 
 
-# ------------------------------------------------------------- regressao ---
 def ajustar(X, y, intercepto=True):
-    """Minimos quadrados ordinarios: beta = (X'X)^-1 X'y."""
     Xp = np.hstack([np.ones((X.shape[0], 1)), X]) if intercepto else X.copy()
     beta = np.linalg.solve(Xp.T @ Xp, Xp.T @ y)
     return beta, Xp
@@ -58,7 +43,6 @@ def prever(beta, X, intercepto=True):
     return Xp @ beta
 
 
-# ---------------------------------------------------------------- metricas --
 def r2(y, yhat):
     return 1.0 - np.sum((y - yhat) ** 2) / np.sum((y - np.mean(y)) ** 2)
 
@@ -89,9 +73,7 @@ def resumo_metricas(nome, y, yhat, p):
     print(f"    MAE         = {mae(y, yhat):.4f}")
 
 
-# ------------------------------------------------------- graficos em texto --
 def dispersao_ascii(x, y, titulo, rot_x, rot_y, largura=61, altura=17):
-    """Grafico de dispersao simples em caracteres (sem matplotlib)."""
     print(f"\n  {titulo}")
     xmin, xmax = float(np.min(x)), float(np.max(x))
     ymin, ymax = float(np.min(y)), float(np.max(y))
@@ -121,14 +103,7 @@ def dispersao_ascii(x, y, titulo, rot_x, rot_y, largura=61, altura=17):
     print(f"  (eixo vertical: {rot_y})")
 
 
-# ----------------------------------------------- graficos para o relatorio --
 def gerar_graficos(y, yhat, e, tempo, pasta):
-    """Salva os graficos em PNG usando matplotlib.
-
-    O matplotlib e usado apenas para DESENHAR; o modelo e as metricas sao
-    calculados sem nenhuma biblioteca de modelagem. Se ele nao estiver
-    instalado, o programa continua com os graficos em texto.
-    """
     try:
         import matplotlib
         matplotlib.use("Agg")          
@@ -141,7 +116,7 @@ def gerar_graficos(y, yhat, e, tempo, pasta):
 
     arquivos = []
 
-    # 1) residuos x valores ajustados
+
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.scatter(yhat, e, s=18, alpha=0.6, color="#1f77b4",
                edgecolor="black", linewidth=0.3, zorder=3)
@@ -156,7 +131,7 @@ def gerar_graficos(y, yhat, e, tempo, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    # 2) histograma dos residuos
+  
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.hist(e, bins=20, color="#4c9be8", edgecolor="black")
     ax.set_xlabel("Residuo $e_i$ (rad)")
@@ -169,7 +144,7 @@ def gerar_graficos(y, yhat, e, tempo, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    # 3) observado x ajustado (qualidade da previsao)
+
     fig, ax = plt.subplots(figsize=(5.5, 5.5))
     ax.scatter(y, yhat, s=18, alpha=0.6, color="#1f77b4",
                edgecolor="black", linewidth=0.3, zorder=3)
@@ -188,7 +163,7 @@ def gerar_graficos(y, yhat, e, tempo, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    # 4) residuos x tempo de exposicao (mostra o padrao nao captado)
+
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.scatter(tempo, e, s=18, alpha=0.6, color="#1f77b4",
                edgecolor="black", linewidth=0.3, zorder=3)
@@ -203,12 +178,11 @@ def gerar_graficos(y, yhat, e, tempo, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    print("\n  Graficos salvos em PNG (para usar no relatorio):")
+    print("\n  Graficos salvos em PNG:")
     for c in arquivos:
         print(f"    - {os.path.basename(c)}")
 
 
-# ------------------------------------------------------------------ main ----
 def main():
     cabecalho, dados = ler_csv(ARQUIVO)
     col = {nome: i for i, nome in enumerate(cabecalho)}
@@ -236,7 +210,7 @@ def main():
         print(f"  {nome:<20}{np.mean(v):>12.4f}{np.std(v, ddof=1):>12.4f}"
               f"{np.min(v):>12.4f}{np.max(v):>12.4f}")
 
-    # ---------------------------------------------------------------- (a) --
+
     print("\n" + "-" * 78)
     print("(a) MODELO COMPLETO - ajuste por minimos quadrados")
     print("-" * 78)
@@ -260,14 +234,14 @@ def main():
     print("     valor negativo indica que a forma aditiva nao descreve bem a")
     print("     regiao proxima da origem.")
 
-    # ---------------------------------------------------------------- (b) --
+   
     print("\n" + "-" * 78)
     print("(b) PREVISAO: corrente = 15 mA, tempo de exposicao = 5 minutos")
     print("-" * 78)
     novo = np.array([[15.0, 5.0]])
     print(f"\n  Dose de radiacao prevista = {prever(beta, novo)[0]:.4f} rad")
 
-    # ------------------------------------------------------------ (c)(d) --
+    
     print("\n" + "-" * 78)
     print("(c)/(d) R2 E R2 AJUSTADO DO MODELO COMPLETO")
     print("-" * 78)
@@ -285,7 +259,7 @@ def main():
   a diferenca cresceria muito se o numero de variaveis fosse grande em
   relacao ao numero de observacoes.""")
 
-    # ---------------------------------------------------------------- (e) --
+    
     print("\n" + "-" * 78)
     print("(e) COMPARACAO COM O MODELO ALTERNATIVO (so mAmp)")
     print("-" * 78)
@@ -310,7 +284,7 @@ def main():
   minutos e deixa-lo de fora reduz muito o poder explicativo do modelo.
   O melhor modelo, entre os dois, e o COMPLETO.""")
 
-    # -------------------------------------------------------- residuos -----
+
     print("\n" + "-" * 78)
     print("ANALISE DE RESIDUOS DO MODELO COMPLETO")
     print("-" * 78)
@@ -349,7 +323,7 @@ def main():
     incluir o termo de interacao (mAmp * Tempo) ou trabalhar com a resposta
     em escala logaritmica.""")
 
-    # ---------------------------------------------------------------- (f) --
+   
     print("\n" + "-" * 78)
     print("(f) MODELO COM INTERCEPTO FORCADO A ZERO")
     print("-" * 78)
@@ -390,7 +364,7 @@ def main():
   objetivo for respeitar a interpretacao teorica do fenomeno, o modelo sem
   intercepto e defensavel, e a perda de precisao e o preco dessa coerencia.""")
 
-    # ---------------------------------------------------------------- (h) --
+
     print("\n" + "-" * 78)
     print("(h) ALEM DO R2 - MSE, RMSE E MAE")
     print("-" * 78)
