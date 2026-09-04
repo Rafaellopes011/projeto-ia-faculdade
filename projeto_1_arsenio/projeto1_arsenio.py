@@ -1,22 +1,9 @@
-"""
-Projeto 1 - Regressao linear multipla: arsenio nas unhas do pe
-
-Resposta : Arsenio_Unhas (ppm)
-Regressores: Idade, Uso_Beber, Uso_Cozinhar, Arsenio_Agua
-
-Somente NumPy (nenhuma implementacao pronta de regressao e usada:
-os coeficientes sao obtidos resolvendo as equacoes normais).
-"""
-
 import os
 import numpy as np
 
 PASTA = os.path.dirname(os.path.abspath(__file__))
 
-# O CSV deve estar NA MESMA PASTA deste arquivo .py. Aceitamos as duas
-# grafias possiveis do nome (com e sem o separador "_").
 NOMES_ACEITOS = ["arsenio_dataset.csv", "arseniodataset.csv"]
-
 
 def localizar_dataset():
     for nome in NOMES_ACEITOS:
@@ -27,13 +14,9 @@ def localizar_dataset():
         "CSV nao encontrado. Coloque um dos arquivos "
         + " ou ".join(NOMES_ACEITOS) + " na pasta " + PASTA)
 
-
 ARQUIVO = localizar_dataset()
 
-
-# ---------------------------------------------------------------- leitura ---
 def ler_csv(caminho):
-    """Le um CSV numerico com cabecalho e devolve (cabecalho, matriz)."""
     with open(caminho, "r", encoding="utf-8") as f:
         linhas = [l.strip() for l in f if l.strip()]
     cabecalho = linhas[0].split(",")
@@ -41,13 +24,7 @@ def ler_csv(caminho):
     return cabecalho, np.array(dados, dtype=float)
 
 
-# ------------------------------------------------------------- regressao ---
 def ajustar(X, y, intercepto=True):
-    """Minimos quadrados ordinarios: beta = (X'X)^-1 X'y.
-
-    Devolve (beta, X_projeto). Se intercepto=True, uma coluna de 1s
-    e adicionada como primeira coluna da matriz de projeto.
-    """
     if intercepto:
         Xp = np.hstack([np.ones((X.shape[0], 1)), X])
     else:
@@ -65,26 +42,20 @@ def prever(beta, X, intercepto=True):
         Xp = X.copy()
     return Xp @ beta
 
-
-# ---------------------------------------------------------------- metricas --
 def r2(y, yhat):
     ss_res = np.sum((y - yhat) ** 2)
     ss_tot = np.sum((y - np.mean(y)) ** 2)
     return 1.0 - ss_res / ss_tot
 
-
 def r2_ajustado(y, yhat, p):
     n = len(y)
     return 1.0 - (1.0 - r2(y, yhat)) * (n - 1) / (n - p - 1)
 
-
 def mse(y, yhat):
     return float(np.mean((y - yhat) ** 2))
 
-
 def rmse(y, yhat):
     return float(np.sqrt(mse(y, yhat)))
-
 
 def mae(y, yhat):
     return float(np.mean(np.abs(y - yhat)))
@@ -99,9 +70,7 @@ def resumo_metricas(nome, y, yhat, p):
     print(f"    MAE         = {mae(y, yhat):.6f}")
 
 
-# ------------------------------------------------------- graficos em texto --
 def dispersao_ascii(x, y, titulo, rot_x, rot_y, largura=61, altura=17):
-    """Grafico de dispersao simples em caracteres (sem matplotlib)."""
     print(f"\n  {titulo}")
     xmin, xmax = float(np.min(x)), float(np.max(x))
     ymin, ymax = float(np.min(y)), float(np.max(y))
@@ -111,7 +80,6 @@ def dispersao_ascii(x, y, titulo, rot_x, rot_y, largura=61, altura=17):
         ymax = ymin + 1.0
     tela = [[" "] * largura for _ in range(altura)]
 
-    # linha de referencia y = 0, se estiver dentro da faixa
     if ymin <= 0.0 <= ymax:
         lz = int(round((ymax - 0.0) / (ymax - ymin) * (altura - 1)))
         tela[lz] = ["-"] * largura
@@ -151,17 +119,10 @@ def histograma_ascii(v, titulo, n_faixas=9, escala=40):
               f"{barra:<{escala}} {cont}")
 
 
-# ----------------------------------------------- graficos para o relatorio --
 def gerar_graficos(yhat, e, pasta):
-    """Salva os graficos de residuos em PNG usando matplotlib.
-
-    O matplotlib e usado apenas para DESENHAR; o modelo e as metricas sao
-    calculados sem nenhuma biblioteca de modelagem. Se ele nao estiver
-    instalado, o programa continua normalmente com os graficos em texto.
-    """
     try:
         import matplotlib
-        matplotlib.use("Agg")          # nao precisa de janela grafica
+        matplotlib.use("Agg")         
         import matplotlib.pyplot as plt
     except ImportError:
         print("\n  [matplotlib nao instalado - apenas os graficos em texto"
@@ -172,7 +133,7 @@ def gerar_graficos(yhat, e, pasta):
     n = len(e)
     arquivos = []
 
-    # 1) residuos x valores ajustados
+
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.scatter(yhat, e, color="#1f77b4", edgecolor="black", zorder=3)
     ax.axhline(0.0, color="red", linewidth=1.2, zorder=2)
@@ -186,7 +147,7 @@ def gerar_graficos(yhat, e, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    # 2) histograma dos residuos
+
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.hist(e, bins=9, color="#4c9be8", edgecolor="black")
     ax.set_xlabel("Residuo $e_i$ (ppm)")
@@ -199,7 +160,7 @@ def gerar_graficos(yhat, e, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    # 3) residuos x ordem da observacao
+
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ordem = np.arange(1, n + 1)
     ax.plot(ordem, e, marker="o", linestyle="-", color="#1f77b4", zorder=3)
@@ -214,12 +175,11 @@ def gerar_graficos(yhat, e, pasta):
     plt.close(fig)
     arquivos.append(caminho)
 
-    print("\n  Graficos salvos em PNG (para usar no relatorio):")
+    print("\n  Graficos salvos em PNG:")
     for c in arquivos:
         print(f"    - {os.path.basename(c)}")
 
 
-# ------------------------------------------------------------------ main ----
 def main():
     cabecalho, dados = ler_csv(ARQUIVO)
     col = {nome: i for i, nome in enumerate(cabecalho)}
@@ -242,7 +202,7 @@ def main():
     print(f"Resposta   : Arsenio_Unhas (ppm)")
     print(f"Regressores: {', '.join(nomes_completo)}")
 
-    # ---------------------------------------------------------------- (a) --
+
     print("\n" + "-" * 78)
     print("(a) MODELO COMPLETO - ajuste por minimos quadrados")
     print("-" * 78)
@@ -266,7 +226,7 @@ def main():
     print("     os regressores valem zero (extrapolacao, sem sentido pratico")
     print("     porque nao existe participante com idade 0 e categorias 0).")
 
-    # ---------------------------------------------------------------- (b) --
+
     print("\n" + "-" * 78)
     print("(b) PREVISAO: idade=30, beber=5, cozinhar=5, arsenio na agua=0.135")
     print("-" * 78)
@@ -274,7 +234,7 @@ def main():
     pred = prever(beta, novo)[0]
     print(f"\n  Arsenio previsto nas unhas = {pred:.6f} ppm")
 
-    # ------------------------------------------------------------ (d)(e) --
+
     print("\n" + "-" * 78)
     print("(d)/(e) R2 E R2 AJUSTADO DO MODELO COMPLETO")
     print("-" * 78)
@@ -294,7 +254,7 @@ def main():
   valor, e mais honesto): a diferenca entre os dois mostra quanto do ajuste
   vem apenas da quantidade de variaveis usadas.""")
 
-    # ---------------------------------------------------------------- (f) --
+
     print("\n" + "-" * 78)
     print("(f) COMPARACAO COM O MODELO ALTERNATIVO (so Arsenio_Agua)")
     print("-" * 78)
@@ -322,7 +282,7 @@ def main():
   variavel que apresentou maior contribuicao para explicar a concentracao
   encontrada nas unhas.""")
 
-    # ------------------------------------------------- (f-2) residuos ------
+
     print("\n" + "-" * 78)
     print("(f-2) ANALISE DE RESIDUOS DO MODELO COMPLETO")
     print("-" * 78)
@@ -333,7 +293,7 @@ def main():
     print(f"  {'i':>3} {'y observado':>13} {'y ajustado':>13} "
           f"{'residuo e':>13} {'residuo / erro padrao':>23}")
     print("  " + "-" * 69)
-    s = float(np.sqrt(np.sum(e ** 2) / (n - p_completo - 1)))  # erro padrao
+    s = float(np.sqrt(np.sum(e ** 2) / (n - p_completo - 1))) 
     for i in range(n):
         print(f"  {i+1:>3} {y[i]:>13.4f} {yhat[i]:>13.4f} "
               f"{e[i]:>13.4f} {e[i]/s:>23.4f}")
@@ -345,14 +305,12 @@ def main():
     print(f"  Erro padrao da regressao (s) = {s:.6f}")
     print(f"  Residuo minimo / maximo = {np.min(e):.4f} / {np.max(e):.4f}")
 
-    # normalidade aproximada: assimetria e curtose
     z = (e - np.mean(e)) / np.std(e)
     assimetria = float(np.mean(z ** 3))
     curtose = float(np.mean(z ** 4) - 3.0)
     print(f"  Assimetria dos residuos = {assimetria:.4f} (0 = simetrico)")
     print(f"  Curtose (excesso)       = {curtose:.4f} (0 = normal)")
 
-    # independencia: estatistica de Durbin-Watson
     dw = float(np.sum(np.diff(e) ** 2) / np.sum(e ** 2))
     print(f"  Durbin-Watson           = {dw:.4f} "
           "(dados transversais: ver ressalva abaixo)")
@@ -391,7 +349,6 @@ def main():
   Arsenio_Unhas, pode ser investigada para tentar reduzir esse
   comportamento.""")
 
-    # ---------------------------------------------------------------- (g) --
     print("\n" + "-" * 78)
     print("(g) MODELO COM INTERCEPTO FORCADO A ZERO")
     print("-" * 78)
@@ -432,7 +389,6 @@ def main():
   Escolha: o modelo {escolha}, por ter menor erro e por nao impor uma
   restricao sem justificativa fisica.""")
 
-    # ---------------------------------------------------------------- (h) --
     print("\n" + "-" * 78)
     print("(h) ALEM DO R2 - MSE, RMSE E MAE")
     print("-" * 78)
