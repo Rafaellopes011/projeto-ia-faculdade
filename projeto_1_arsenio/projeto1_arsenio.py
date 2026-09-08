@@ -120,15 +120,9 @@ def histograma_ascii(v, titulo, n_faixas=9, escala=40):
 
 
 def gerar_graficos(yhat, e, pasta):
-    try:
-        import matplotlib
-        matplotlib.use("Agg")         
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("\n  [matplotlib nao instalado - apenas os graficos em texto"
-              " foram gerados]")
-        print("  Para gerar os PNGs: python -m pip install matplotlib")
-        return
+    import matplotlib
+    matplotlib.use("Agg")         
+    import matplotlib.pyplot as plt
 
     n = len(e)
     arquivos = []
@@ -422,7 +416,6 @@ def main():
   extras - o que reforca a leitura do R2 ajustado.""")
 
     print("\n" + "=" * 78)
-    print("FIM - PROJETO 1")
     print("=" * 78)
 
 
