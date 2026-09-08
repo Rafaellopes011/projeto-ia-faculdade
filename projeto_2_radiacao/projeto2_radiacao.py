@@ -104,15 +104,9 @@ def dispersao_ascii(x, y, titulo, rot_x, rot_y, largura=61, altura=17):
 
 
 def gerar_graficos(y, yhat, e, tempo, pasta):
-    try:
-        import matplotlib
-        matplotlib.use("Agg")          
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("\n  [matplotlib nao instalado - apenas os graficos em texto"
-              " foram gerados]")
-        print("  Para gerar os PNGs: python -m pip install matplotlib")
-        return
+    import matplotlib
+    matplotlib.use("Agg")          
+    import matplotlib.pyplot as plt
 
     arquivos = []
 
