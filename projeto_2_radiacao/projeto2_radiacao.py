@@ -390,7 +390,6 @@ def main():
   interacao (mAmp * Tempo) poderia representar melhor os dados.""")
 
     print("\n" + "=" * 78)
-    print("FIM - PROJETO 2")
     print("=" * 78)
 
 
